@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Asesorías Empresariales</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fa;
+    }
+
+    .sidebar {
+      height: 100vh;
+      width: 220px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #003366;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+      transition: width 0.3s ease;
+      overflow-x: hidden;
+      z-index: 100;
+    }
+
+    .sidebar.collapsed {
+      width: 60px;
+    }
+
+    .sidebar h2 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar.collapsed h2 {
+      opacity: 0;
+    }
+
+    .sidebar a {
+      padding: 12px 15px;
+      text-decoration: none;
+      font-size: 16px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    /* Estilo para el enlace activo */
+    .sidebar a.activo {
+      background-color: #0059b3;
+      border-left: 4px solid #ffcc00;
+    }
+
+    .sidebar.collapsed .texto-menu {
+      display: none;
+    }
+
+    .flecha {
+      margin-left: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .submenu {
+      display: none;
+      flex-direction: column;
+      background-color: #00264d;
+      width: 100%;
+    }
+
+    .submenu a {
+      padding: 10px 15px;
+      font-size: 14px;
+      color: white;
+    }
+
+    .submenu a:hover {
+      background-color: #003380;
+      border-left: 4px solid #ffcc00;
+    }
+
+    .submenu-abierto + .submenu {
+      display: flex;
+    }
+
+    .submenu-abierto .flecha {
+      transform: rotate(90deg);
+    }
+
+    .encabezado {
+      background-color: #004080;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin-left: 220px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .sidebar.collapsed ~ .encabezado {
+      margin-left: 60px;
+    }
+
+    .contenido {
+      margin-left: 220px;
+      padding: 20px;
+      min-height: 80vh;
+      max-height: 600px; /* Limita el tamaño para no hacerla gigante */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: margin-left 0.3s ease, background-image 0.5s ease;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .sidebar.collapsed ~ .contenido {
+      margin-left: 60px;
+    }
+
+    .seccion-contenido {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .pie-pagina {
+      background-color: #003366;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-left: 220px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .sidebar.collapsed ~ .pie-pagina {
+      margin-left: 60px;
+    }
+
+    #btn-toggle-sidebar {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin: 10px 0 20px 0;
+    }
+
+    form input[type="text"],
+    form input[type="email"],
+    form textarea {
+      width: 100%;
+      max-width: 500px;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .btn-enviar {
+      background-color: #004080;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-enviar:hover {
+      background-color: #0059b3;
+    }
+
+    .btn-wsp {
+      display: inline-block;
+      background-color: #25d366;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-bottom: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-wsp:hover {
+      background-color: #1ebe5d;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar" id="sidebar">
+    <h2>Menú</h2>
+
+    <button id="btn-toggle-sidebar">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <a href="javascript:void(0)" class="submenu-toggle" data-bg="desktop1.jpg">
+      <i class="fas fa-clipboard-list"></i>
+      <span class="texto-menu">Servicios</span>
+      <i class="fas fa-caret-right flecha"></i>
+    </a>
+    <div class="submenu">
+      <a href="#asesoria-contable" data-bg="desktop2.jpg"><i class="fas fa-file-invoice-dollar"></i> <span class="texto-menu">Asesoría Contable</span></a>
+      <a href="#consultoria-administrativa" data-bg="desktop3.jpg"><i class="fas fa-cogs"></i> <span class="texto-menu">Consultoría Administrativa</span></a>
+      <a href="#planificacion-financiera" data-bg="desktop4.jpg"><i class="fas fa-chart-line"></i> <span class="texto-menu">Planificación Financiera</span></a>
+    </div>
+
+    <a href="#nosotros" data-bg="desktop5.jpg"><i class="fas fa-users"></i> <span class="texto-menu">Sobre Nosotros</span></a>
+    <a href="#contacto" data-bg="desktop6.jpg"><i class="fas fa-envelope"></i> <span class="texto-menu">Contacto</span></a>
+  </div>
+
+  <header class="encabezado">
+    <h1>Asesorías Empresariales</h1>
+    <p>Soluciones contables, administrativas y financieras para tu negocio</p>
+  </header>
+
+  <div class="contenido" id="contenido">
+    <section id="servicios-general" class="seccion-contenido">
+      <h2>Servicios</h2>
+      <p>Bienvenido a nuestra sección de Servicios. Aquí ofrecemos asesoría contable, consultoría administrativa y planificación financiera para ayudar a tu negocio a crecer.</p>
+      <p>Selecciona alguna opción en el menú para más detalles.</p>
+    </section>
+    <section id="asesoria-contable" class="seccion-contenido">
+      <h2>Asesoría Contable</h2>
+      <p>Detalles sobre servicios contables...</p>
+    </section>
+    <section id="consultoria-administrativa" class="seccion-contenido">
+      <h2>Consultoría Administrativa</h2>
+      <p>Detalles sobre consultoría administrativa...</p>
+    </section>
+    <section id="planificacion-financiera" class="seccion-contenido">
+      <h2>Planificación Financiera</h2>
+      <p>Detalles sobre planificación financiera...</p>
+    </section>
+    <section id="nosotros" class="seccion-contenido">
+      <h2>Sobre Nosotros</h2>
+      <p>Información de la empresa...</p>
+    </section>
+    <section id="contacto" class="seccion-contenido">
+      <h2>Contacto</h2>
+      <p>¿Tienes preguntas o necesitas asesoría? Contáctanos por los siguientes medios:</p>
+
+      <p>
+        <a href="https://wa.me/50372736259?text=Hola,%20quiero%20más%20información%20sobre%20sus%20servicios." target="_blank" class="btn-wsp" rel="noopener noreferrer">
+          <i class="fab fa-whatsapp"></i> Enviar mensaje por WhatsApp
+        </a>
+      </p>
+
+      <form action="mailto:moranluis072@gmail.com" method="post" enctype="text/plain">
+        <label for="nombre">Nombre:</label><br />
+        <input type="text" id="nombre" name="Nombre" required /><br />
+
+        <label for="email">Correo electrónico:</label><br />
+        <input type="email" id="email" name="Correo" required /><br />
+
+        <label for="mensaje">Mensaje:</label><br />
+        <textarea id="mensaje" name="Mensaje" rows="5" required></textarea><br />
+
+        <input type="submit" value="Enviar correo" class="btn-enviar" />
+      </form>
+    </section>
+  </div>
+
+  <footer class="pie-pagina">
+    <p>&copy; 2025 Asesorías Empresariales. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const btnToggle = document.getElementById('btn-toggle-sidebar');
+    const contenido = document.getElementById('contenido');
+    const secciones = document.querySelectorAll('.seccion-contenido');
+
+    // Ocultar todas las secciones al inicio
+    secciones.forEach(sec => sec.style.display = 'none');
+
+    btnToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+    });
+
+    // Manejo del menú y submenú
+    const submenuToggles = document.querySelectorAll('.submenu-toggle');
+
+    submenuToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('submenu-abierto');
+
+        const next = toggle.nextElementSibling;
+        if (next && next.classList.contains('submenu')) {
+          if (next.style.display === 'flex') {
+            next.style.display = 'none';
+          } else {
+            next.style.display = 'flex';
+          }
+        }
+
+        const bg = toggle.getAttribute('data-bg');
+        if (bg) {
+          contenido.style.backgroundImage = `url(${bg})`;
+        }
+      });
+    });
+
+    // Manejo de links de submenu y menu normal para mostrar secciones, cambiar fondo y marcar activo
+    const submenuLinks = document.querySelectorAll('.submenu a, .sidebar > a:not(.submenu-toggle)');
+
+    function limpiarActivos() {
+      submenuLinks.forEach(link => link.classList.remove('activo'));
+    }
+
+    submenuLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = link.getAttribute('href').substring(1);
+        const bg = link.getAttribute('data-bg');
+
+        // Mostrar solo la sección correspondiente
+        secciones.forEach(sec => {
+          sec.style.display = (sec.id === target) ? 'block' : 'none';
+        });
+
+        // Cambiar fondo
+        if (bg) {
+          contenido.style.backgroundImage = `url(${bg})`;
+        }
+
+        // Marcar activo
+        limpiarActivos();
+        link.classList.add('activo');
+      });
+    });
+
+    // Al cargar, mostrar sección servicios-general, fondo desktop1.jpg y menú cerrado (submenu no desplegado)
+    window.addEventListener('DOMContentLoaded', () => {
+      // Mostrar la sección "servicios-general"
+      secciones.forEach(sec => {
+        sec.style.display = (sec.id === 'servicios-general') ? 'block' : 'none';
+      });
+
+      // Cambiar fondo a la imagen "desktop1.jpg"
+      contenido.style.backgroundImage = 'url(desktop1.jpg)';
+
+      // Asegurarse que el submenu "Servicios" esté cerrado
+      const serviciosToggle = document.querySelector('.submenu-toggle[data-bg="desktop1.jpg"]');
+      if (serviciosToggle) {
+        serviciosToggle.classList.remove('submenu-abierto');
+        const submenu = serviciosToggle.nextElementSibling;
+        if (submenu && submenu.classList.contains('submenu')) {
+          submenu.style.display = 'none';
+        }
+      }
+
+      // Limpiar activos, no marcar ningún link activo
+      limpiarActivos();
+    });
+  </script>
+</body>
+</html>
